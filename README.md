@@ -34,7 +34,7 @@ The project evaluates models using precision, recall, F1-score, ROC-AUC, accurac
 ## Setup
 
 1. Create and activate a Python virtual environment.
-2. Install dependencies using `pip install -r requirements.txt`.
+2. Install dependencies using `pip install -r requirement.txt`.
 3. Download the dataset from its documented source.
 4. Place the dataset in the expected local data directory.
 5. Open and run `notebooks/bank_marketing_ml.ipynb`.
