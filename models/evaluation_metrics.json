@@ -1,0 +1,355 @@
+{
+  "report_metadata": {
+    "title": "Model Performance & Evaluation",
+    "subtitle": "Rigorous test evaluation results demonstrating how the tuned Random Forest handles severe class imbalance.",
+    "version": "2.0.0",
+    "generated_at": "2026-10-26T12:44:22.727782+00:00",
+    "generator": "export_model.py (Notebook-Reconciled Workflow)",
+    "status": "VERIFIED"
+  },
+  "model_specifications": {
+    "model_name": "Random Forest (Tuned Pipeline)",
+    "framework": "scikit-learn 1.4+",
+    "artifact_path": "random_forest_pipeline.joblib",
+    "positive_class": "yes",
+    "negative_class": "no",
+    "classes": [
+      "no",
+      "yes"
+    ],
+    "timing_constraint": "Pre-contact prediction (duration excluded)",
+    "hyperparameters": {
+      "n_estimators": 100,
+      "max_depth": null,
+      "min_samples_leaf": 3,
+      "class_weight": "balanced",
+      "random_state": 42,
+      "n_jobs": -1
+    },
+    "preprocessing": {
+      "preprocessor_type": "ColumnTransformer",
+      "numerical_features_count": 7,
+      "categorical_features_count": 9,
+      "input_features_count": 16,
+      "transformed_features_count": 51
+    },
+    "artifact_size_mb": 35.4
+  },
+  "dataset": {
+    "file": "data/bank-full.csv",
+    "sha256": "d1513ec63b385506f7cfce9f2c5caa9fe99e7ba4e8c3fa264b3aaf0f849ed32d",
+    "total_records": 45211,
+    "train_samples": 36168,
+    "test_samples": 9043,
+    "split_ratio": "80% Train / 20% Held-out Test (Stratified, seed=42)",
+    "train_distribution": {
+      "no": 31937,
+      "yes": 4231
+    },
+    "test_distribution": {
+      "no": 7985,
+      "yes": 1058
+    }
+  },
+  "cross_validation": {
+    "strategy": "5-Fold StratifiedKFold (shuffle=True, random_state=42)",
+    "scoring": "f1 (pos_label='yes')",
+    "best_cv_f1": 0.4661,
+    "search_time_seconds": 78.53
+  },
+  "test_set_size": 9043,
+  "test_split_ratio": "80% Train / 20% Held-out Test (Stratified, seed=42)",
+  "summary_metrics": [
+    {
+      "name": "ROC-AUC",
+      "value": 0.8025,
+      "formatted": "80.25%",
+      "dataset_split": "Held-out Test Set (9,043 samples)",
+      "status": "Verified",
+      "description": "Measures ranking ability across decision thresholds. An AUC of 80.25% confirms strong discrimination between subscribers and non-subscribers."
+    },
+    {
+      "name": "F1-Score",
+      "value": 0.4765,
+      "formatted": "0.4765",
+      "dataset_split": "Held-out Test Set (9,043 samples)",
+      "status": "Verified",
+      "description": "Harmonic mean of precision and recall for the positive class ('yes'). Balances detection against false alarm penalties under class imbalance."
+    },
+    {
+      "name": "Recall (Sensitivity)",
+      "value": 0.5794,
+      "formatted": "57.94%",
+      "dataset_split": "Held-out Test Set (9,043 samples)",
+      "status": "Verified",
+      "description": "Captures 57.94% of all actual term deposit subscribers (613 out of 1,058). More than double baseline Random Forest recall (23.16%)."
+    },
+    {
+      "name": "Precision",
+      "value": 0.4046,
+      "formatted": "40.46%",
+      "dataset_split": "Held-out Test Set (9,043 samples)",
+      "status": "Verified",
+      "description": "Out of all leads flagged as likely subscribers, 40.46% actually converted (613 out of 1,515 flagged). Enables efficient sales prioritization."
+    },
+    {
+      "name": "Accuracy",
+      "value": 0.851,
+      "formatted": "85.10%",
+      "dataset_split": "Held-out Test Set (9,043 samples)",
+      "status": "Verified",
+      "description": "Overall correct classifications (7,696 / 9,043). Reflects intentional trade-off where balanced weights catch far more subscribers."
+    }
+  ],
+  "confusion_matrix": {
+    "total_test_samples": 9043,
+    "class_order": [
+      "no",
+      "yes"
+    ],
+    "true_negatives": 7083,
+    "false_positives": 902,
+    "false_negatives": 445,
+    "true_positives": 613,
+    "actual_no_total": 7985,
+    "actual_yes_total": 1058,
+    "predicted_no_total": 7528,
+    "predicted_yes_total": 1515,
+    "breakdown": [
+      {
+        "quadrant": "True Negatives (TN)",
+        "count": 7083,
+        "percentage_of_test": 78.33,
+        "interpretation": "Non-subscribers correctly predicted as 'no' (7,083 / 7,985 actual non-subscribers). Avoids wasting outreach bandwidth."
+      },
+      {
+        "quadrant": "False Positives (FP)",
+        "count": 902,
+        "percentage_of_test": 9.97,
+        "interpretation": "Non-subscribers incorrectly predicted as 'yes'. Incurs brief marketing call cost, but poses no direct financial loss."
+      },
+      {
+        "quadrant": "False Negatives (FN)",
+        "count": 445,
+        "percentage_of_test": 4.92,
+        "interpretation": "Actual subscribers missed by the model. Represents missed deposit acquisition opportunities that could have generated bank revenue."
+      },
+      {
+        "quadrant": "True Positives (TP)",
+        "count": 613,
+        "percentage_of_test": 6.78,
+        "interpretation": "Actual subscribers successfully identified and contacted (613 / 1,058 actual subscribers). Highly actionable pool for sales advisors."
+      }
+    ]
+  },
+  "baseline_vs_tuned": [
+    {
+      "model": "Baseline Random Forest",
+      "hyperparameters": "n_estimators=200, default depth/weights",
+      "accuracy": 0.8937,
+      "precision": 0.6234,
+      "recall": 0.2316,
+      "f1_score": 0.3377,
+      "roc_auc": 0.79,
+      "notes": "Suffers from severe minority-class neglect; misses > 76% of actual subscribers (245 detected out of 1,058)."
+    },
+    {
+      "model": "Tuned Random Forest",
+      "hyperparameters": "n_estimators=100, max_depth=None, min_samples_leaf=3, class_weight='balanced'",
+      "accuracy": 0.851,
+      "precision": 0.4046,
+      "recall": 0.5794,
+      "f1_score": 0.4765,
+      "roc_auc": 0.8025,
+      "notes": "Selected model. Balanced class weights catch 613 subscribers (57.94% recall vs 23.16% baseline), prioritizing lead capture."
+    }
+  ],
+  "all_baseline_models": [
+    {
+      "model": "Random Forest",
+      "accuracy": 0.8937,
+      "precision": 0.6234,
+      "recall": 0.2316,
+      "f1_score": 0.3377,
+      "roc_auc": 0.79,
+      "rank_f1": 1,
+      "selection_status": "Shortlisted for tuning"
+    },
+    {
+      "model": "Decision Tree",
+      "accuracy": 0.8329,
+      "precision": 0.3025,
+      "recall": 0.328,
+      "f1_score": 0.3147,
+      "roc_auc": 0.6139,
+      "rank_f1": 2,
+      "selection_status": "Eliminated (lowest AUC, high variance)"
+    },
+    {
+      "model": "Gradient Boosting",
+      "accuracy": 0.8943,
+      "precision": 0.6594,
+      "recall": 0.1994,
+      "f1_score": 0.3062,
+      "roc_auc": 0.8023,
+      "rank_f1": 3,
+      "selection_status": "Shortlisted for tuning (highest baseline ROC-AUC)"
+    },
+    {
+      "model": "Logistic Regression",
+      "accuracy": 0.8934,
+      "precision": 0.6643,
+      "recall": 0.1796,
+      "f1_score": 0.2827,
+      "roc_auc": 0.7717,
+      "rank_f1": 4,
+      "selection_status": "Shortlisted for tuning (linear baseline benchmark)"
+    }
+  ],
+  "feature_importances": [
+    {
+      "feature": "month",
+      "importance": 0.138,
+      "importance_pct": 13.8,
+      "rank": 1,
+      "description": "Last contact month of the year (seasonal deposit peaks in Mar/Sep/Oct)"
+    },
+    {
+      "feature": "balance",
+      "importance": 0.1248,
+      "importance_pct": 12.48,
+      "rank": 2,
+      "description": "Customer average yearly balance (subscribers average \u20ac1,804 vs \u20ac1,304 non-subscribers)"
+    },
+    {
+      "feature": "age",
+      "importance": 0.112,
+      "importance_pct": 11.2,
+      "rank": 3,
+      "description": "Customer age in years (higher propensity in students < 25 and retirees > 60)"
+    },
+    {
+      "feature": "day",
+      "importance": 0.1031,
+      "importance_pct": 10.31,
+      "rank": 4,
+      "description": "Last contact day of the month"
+    },
+    {
+      "feature": "poutcome",
+      "importance": 0.0887,
+      "importance_pct": 8.87,
+      "rank": 5,
+      "description": "Outcome of previous marketing campaign ('success' conversion rate is 64.7%)"
+    },
+    {
+      "feature": "contact",
+      "importance": 0.0771,
+      "importance_pct": 7.71,
+      "rank": 6,
+      "description": "Communication channel (cellular leads convert at 14.9% vs unknown 4.1%)"
+    },
+    {
+      "feature": "job",
+      "importance": 0.0721,
+      "importance_pct": 7.21,
+      "rank": 7,
+      "description": "Occupation category (students and retirees convert at > 22%)"
+    },
+    {
+      "feature": "campaign",
+      "importance": 0.0557,
+      "importance_pct": 5.57,
+      "rank": 8,
+      "description": "Number of contacts during current campaign (conversion drops after 3 calls)"
+    },
+    {
+      "feature": "housing",
+      "importance": 0.0528,
+      "importance_pct": 5.28,
+      "rank": 9,
+      "description": "Has active housing mortgage loan (customers without mortgage convert at 16.7% vs 7.7%)"
+    },
+    {
+      "feature": "pdays",
+      "importance": 0.0487,
+      "importance_pct": 4.87,
+      "rank": 10,
+      "description": "Days since previous campaign contact (-1 sentinel retained)"
+    },
+    {
+      "feature": "education",
+      "importance": 0.0354,
+      "importance_pct": 3.54,
+      "rank": 11,
+      "description": "Education level (tertiary educated clients convert at 15.0%)"
+    },
+    {
+      "feature": "marital",
+      "importance": 0.0335,
+      "importance_pct": 3.35,
+      "rank": 12,
+      "description": "Marital status (single customers convert at higher rates than married)"
+    },
+    {
+      "feature": "loan",
+      "importance": 0.0206,
+      "importance_pct": 2.06,
+      "rank": 13,
+      "description": "Has active personal consumer loan"
+    },
+    {
+      "feature": "previous",
+      "importance": 0.0195,
+      "importance_pct": 1.95,
+      "rank": 14,
+      "description": "Number of contacts performed before this campaign"
+    },
+    {
+      "feature": "previously_contacted",
+      "importance": 0.0155,
+      "importance_pct": 1.55,
+      "rank": 15,
+      "description": "Binary engineered indicator (0 if pdays == -1 else 1)"
+    },
+    {
+      "feature": "default",
+      "importance": 0.0024,
+      "importance_pct": 0.24,
+      "rank": 16,
+      "description": "Has credit in default (lowest predictive variance; 98.2% are 'no')"
+    }
+  ],
+  "limitations": [
+    {
+      "number": 1,
+      "title": "Target Class Imbalance",
+      "detail": "The target is heavily imbalanced (~88.3% non-subscribers). High raw accuracy is easily achieved by simply guessing the majority class, making F1-Score, Precision, and Recall the only trustworthy performance indicators."
+    },
+    {
+      "number": 2,
+      "title": "Precision vs. Recall Business Trade-off",
+      "detail": "Using class_weight='balanced' successfully doubled subscriber recall (57.94% vs 23.16%), but produced 902 false positives. In bank sales operations, brief phone contact cost is small relative to term deposit acquisition value."
+    },
+    {
+      "number": 3,
+      "title": "Test Set Benchmark Inspection",
+      "detail": "The test set was evaluated during earlier baseline comparisons in the notebook before final tuning, meaning it represents a reliable comparative benchmark rather than an untouched prospective holdout."
+    },
+    {
+      "number": 4,
+      "title": "Predictive Correlation vs. Causation",
+      "detail": "Feature importance metrics (Gini and permutation) reflect statistical predictive associations, not causal relationships. For example, high conversion in October does not mean calling customers in October causes them to subscribe."
+    },
+    {
+      "number": 5,
+      "title": "Decision Threshold Alignment",
+      "detail": "The model uses the default 0.50 probability cutoff. A bank should optimize this threshold dynamically using specific financial cost-benefit equations (cost of outreach phone call vs expected net interest margin of deposit)."
+    },
+    {
+      "number": 6,
+      "title": "Lack of Prospective A/B Operational Testing",
+      "detail": "The pipeline has been rigorously validated offline on historical data, but has not yet been deployed in a prospective randomized A/B live marketing campaign to evaluate real advisor conversion rates."
+    }
+  ]
+}

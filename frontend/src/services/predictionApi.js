@@ -7,7 +7,7 @@ const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 10000, // 10s timeout
+  timeout: 15000,
 });
 
 export async function checkApiHealth() {
@@ -30,7 +30,6 @@ export async function predictSubscription(customerPayload) {
     let errorMessage = 'Failed to obtain prediction from model service.';
     if (error.response) {
       if (error.response.status === 422) {
-        // Validation error
         const details = error.response.data?.detail;
         if (Array.isArray(details)) {
           errorMessage = details.map((d) => `${d.loc?.slice(-1)[0]}: ${d.msg}`).join(', ');
@@ -46,6 +45,80 @@ export async function predictSubscription(customerPayload) {
       errorMessage = 'Cannot reach backend API at ' + API_BASE_URL + '. Please ensure FastAPI server is running.';
     }
     return { success: false, error: errorMessage };
+  }
+}
+
+export async function fetchPipelineData() {
+  try {
+    const response = await apiClient.get('/api/pipeline');
+    return { success: true, data: response.data };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.response?.data?.detail || error.message || 'Failed to load ML pipeline information.',
+    };
+  }
+}
+
+export async function fetchPerformanceData() {
+  try {
+    const response = await apiClient.get('/api/performance');
+    return { success: true, data: response.data };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.response?.data?.detail || error.message || 'Failed to load model performance evaluation.',
+    };
+  }
+}
+
+export async function fetchDatasetSummary() {
+  try {
+    const response = await apiClient.get('/api/dataset/summary');
+    return { success: true, data: response.data };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.response?.data?.detail || error.message || 'Failed to load dataset summary.',
+    };
+  }
+}
+
+export async function fetchDatasetFeatures() {
+  try {
+    const response = await apiClient.get('/api/dataset/features');
+    return { success: true, data: response.data };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.response?.data?.detail || error.message || 'Failed to load dataset feature catalogue.',
+    };
+  }
+}
+
+export async function fetchDatasetPreview(page = 1, pageSize = 10) {
+  try {
+    const response = await apiClient.get('/api/dataset/preview', {
+      params: { page, page_size: pageSize },
+    });
+    return { success: true, data: response.data };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.response?.data?.detail || error.message || 'Failed to load dataset preview records.',
+    };
+  }
+}
+
+export async function fetchDatasetEDA() {
+  try {
+    const response = await apiClient.get('/api/dataset/eda');
+    return { success: true, data: response.data };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.response?.data?.detail || error.message || 'Failed to load exploratory data analysis metrics.',
+    };
   }
 }
 

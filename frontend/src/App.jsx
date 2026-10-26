@@ -1,35 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import Header from './components/Header';
-import CustomerForm from './components/CustomerForm';
-import PredictionCard from './components/PredictionCard';
-import ModelInformation from './components/ModelInformation';
-import { checkApiHealth, predictSubscription } from './services/predictionApi';
-
-const DEFAULT_FORM_VALUES = {
-  age: 35,
-  job: 'management',
-  marital: 'married',
-  education: 'secondary',
-  default: 'no',
-  balance: 1000.0,
-  housing: 'no',
-  loan: 'no',
-  contact: 'cellular',
-  month: 'may',
-  day: 15,
-  campaign: 1,
-  pdays: -1,
-  previous: 0,
-  poutcome: 'unknown',
-};
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import Navigation from './components/Navigation';
+import PredictPage from './pages/PredictPage';
+import PipelinePage from './pages/PipelinePage';
+import PerformancePage from './pages/PerformancePage';
+import DatasetPage from './pages/DatasetPage';
+import { checkApiHealth } from './services/predictionApi';
 
 export default function App() {
-  const [formData, setFormData] = useState(DEFAULT_FORM_VALUES);
-  const [predictionResult, setPredictionResult] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [apiError, setApiError] = useState(null);
-
-  // API connectivity status
   const [isConnected, setIsConnected] = useState(true);
   const [checkingHealth, setCheckingHealth] = useState(true);
 
@@ -41,60 +19,42 @@ export default function App() {
       setCheckingHealth(false);
     }
     verifyHealth();
+
+    // Check health periodically every 30 seconds
+    const interval = setInterval(verifyHealth, 30000);
+    return () => clearInterval(interval);
   }, []);
 
-  const handlePredict = async (payload) => {
-    setIsLoading(true);
-    setApiError(null);
-
-    const res = await predictSubscription(payload);
-    if (res.success) {
-      setPredictionResult(res.data);
-      setIsConnected(true);
-    } else {
-      setApiError(res.error);
-      setIsConnected(false);
-    }
-    setIsLoading(false);
-  };
-
-  const handleReset = () => {
-    setFormData(DEFAULT_FORM_VALUES);
-    setPredictionResult(null);
-    setApiError(null);
-  };
-
   return (
-    <div className="min-h-screen bg-[#F7F9FC] text-[#172B4D] py-5 px-4 sm:px-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <Header isConnected={isConnected} checkingHealth={checkingHealth} />
+    <BrowserRouter>
+      <div className="min-h-screen bg-[#F7F9FC] text-[#172B4D] py-5 px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto">
+          {/* Unified Navigation Header across all pages */}
+          <Navigation isConnected={isConnected} checkingHealth={checkingHealth} />
 
-        {/* Two-Column Responsive Workspace */}
-        <div className="flex flex-col lg:flex-row gap-6 items-start">
-          {/* Left Column: Customer Form (65%) */}
-          <div className="w-full lg:w-[65%] shrink-0">
-            <CustomerForm
-              formData={formData}
-              setFormData={setFormData}
-              defaultValues={DEFAULT_FORM_VALUES}
-              onSubmit={handlePredict}
-              onReset={handleReset}
-              isLoading={isLoading}
-            />
-          </div>
+          {/* Main Application Routes */}
+          <main>
+            <Routes>
+              <Route path="/" element={<Navigate to="/predict" replace />} />
+              <Route path="/predict" element={<PredictPage />} />
+              <Route path="/pipeline" element={<PipelinePage />} />
+              <Route path="/performance" element={<PerformancePage />} />
+              <Route path="/dataset" element={<DatasetPage />} />
+              <Route path="*" element={<Navigate to="/predict" replace />} />
+            </Routes>
+          </main>
 
-          {/* Right Column: Prediction Results & Specifications (35%) */}
-          <div className="w-full lg:w-[35%] shrink-0 sticky top-5">
-            <PredictionCard
-              result={predictionResult}
-              isLoading={isLoading}
-              error={apiError}
-            />
-            <ModelInformation />
-          </div>
+          {/* Clean presentation-ready footer */}
+          <footer className="mt-10 pt-5 border-t border-[#E1E7F0] text-center text-xs text-[#64748B] flex flex-col sm:flex-row items-center justify-between gap-2">
+            <span>
+              Bank Marketing Machine Learning Showcase · Random Forest (Tuned Pipeline)
+            </span>
+            <span>
+              Duration excluded for pre-contact prediction · 45,211 benchmark records
+            </span>
+          </footer>
         </div>
       </div>
-    </div>
+    </BrowserRouter>
   );
 }

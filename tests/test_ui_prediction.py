@@ -35,8 +35,8 @@ class TestBankMarketingUIInference(unittest.TestCase):
         self.assertIn("classifier", self.model.named_steps)
         classifier = self.model.named_steps["classifier"]
         self.assertEqual(type(classifier).__name__, "RandomForestClassifier")
-        self.assertEqual(classifier.n_estimators, 200)
-        self.assertEqual(classifier.max_depth, 15)
+        self.assertEqual(classifier.n_estimators, 100)
+        self.assertIsNone(classifier.max_depth)
         self.assertEqual(classifier.min_samples_leaf, 3)
         self.assertEqual(classifier.class_weight, "balanced")
         self.assertEqual(classifier.random_state, 42)
